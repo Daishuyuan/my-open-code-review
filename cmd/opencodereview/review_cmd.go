@@ -25,7 +25,7 @@ func runReview(args []string) error {
 	}
 
 	// review path: git repo is required (diff concepts depend on it).
-	cc, err := loadCommonContext(opts.repoDir, opts.rulePath, opts.maxTools, opts.maxGitProcs, true)
+	cc, err := loadCommonContext(opts.repoDir, opts.rulePath, opts.reviewProfile, opts.maxTools, opts.maxGitProcs, true)
 	if err != nil {
 		return err
 	}

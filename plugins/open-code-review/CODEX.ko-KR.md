@@ -1,10 +1,10 @@
 # Open Code Review Codex 플러그인 사용법
 
-이 문서는 로컬 Codex에서 Alibaba Open Code Review를 사용하는 방법을 설명합니다.
+이 문서는 로컬 Codex에서 My Open Code Review를 사용하는 방법을 설명합니다.
 
 ## 개요
 
-이 플러그인은 Open Code Review를 Codex 내부 LLM backend로 바꾸지 않습니다. Codex에서 로컬 `ocr` CLI를 호출할 수 있도록 skill을 제공하는 통합입니다.
+이 fork는 명시적인 OCR 설정이 없으면 로컬 Codex 호환 endpoint를 기본 LLM backend로 사용합니다. Codex에서 로컬 `ocr` CLI를 호출할 수 있도록 skill을 제공합니다.
 
 ```text
 Codex
@@ -17,7 +17,7 @@ Codex
 `ocr` CLI가 설치되어 있어야 합니다.
 
 ```bash
-npm install -g @alibaba-group/open-code-review
+npm install -g my-open-code-review
 ```
 
 설치 확인:
@@ -27,7 +27,7 @@ command -v ocr
 ocr version
 ```
 
-OCR 자체의 LLM 설정도 필요합니다.
+로컬 Codex endpoint가 없으면 OCR 자체의 LLM 설정도 필요합니다.
 
 ```bash
 ocr llm test
@@ -40,7 +40,7 @@ ocr llm test
 Codex에서 이 repo를 marketplace로 추가합니다.
 
 ```bash
-codex plugin marketplace add alibaba/open-code-review
+codex plugin marketplace add Daishuyuan/my-open-code-review
 codex
 ```
 
@@ -101,8 +101,8 @@ ocr review --preview
 
 ## 주의사항
 
-- 이 플러그인은 OpenAI Responses API endpoint를 설정하지 않습니다.
-- 이 플러그인은 `OPENAI_API_KEY`나 `gpt-5.1-codex-max` 설정을 요구하지 않습니다.
-- OCR 자체는 별도의 LLM 설정이 필요합니다.
+- 기본값은 `http://127.0.0.1:15721/v1`, `gpt-5.5`, `reasoning_effort=high`입니다.
+- `OCR_CODEX_URL`, `OCR_CODEX_MODEL`, `OCR_CODEX_REASONING_EFFORT`로 기본값을 바꿀 수 있습니다.
+- 로컬 Codex endpoint가 없으면 OCR provider 설정이 필요합니다.
 - 파일 수정은 사용자가 명시적으로 요청한 경우에만 수행합니다.
 - commit 생성은 사용자가 명시적으로 요청한 경우에만 수행합니다.

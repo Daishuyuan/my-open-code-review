@@ -180,10 +180,29 @@ func TestParseScanFlags_ModelOverride(t *testing.T) {
 	}
 }
 
+func TestParseScanFlagsReviewProfile(t *testing.T) {
+	opts, err := parseScanFlags([]string{"--review-profile", "codex-super"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if opts.reviewProfile != "codex-super" {
+		t.Errorf("reviewProfile = %q, want codex-super", opts.reviewProfile)
+	}
+
+	opts, err = parseScanFlags([]string{"--profile", "codex-super"})
+	if err != nil {
+		t.Fatalf("unexpected alias error: %v", err)
+	}
+	if opts.reviewProfile != "codex-super" {
+		t.Errorf("profile alias reviewProfile = %q, want codex-super", opts.reviewProfile)
+	}
+}
+
 func TestParseScanFlags_AllStringFlags(t *testing.T) {
 	opts, err := parseScanFlags([]string{
 		"--tools", "/tmp/tools.json",
 		"--rule", "/tmp/rule.json",
+		"--review-profile", "codex-super",
 		"--repo", "/tmp/repo",
 		"--exclude", "*.md,*.txt",
 		"--batch", "by-language",
@@ -199,6 +218,9 @@ func TestParseScanFlags_AllStringFlags(t *testing.T) {
 	}
 	if opts.rulePath != "/tmp/rule.json" {
 		t.Errorf("rulePath = %q", opts.rulePath)
+	}
+	if opts.reviewProfile != "codex-super" {
+		t.Errorf("reviewProfile = %q", opts.reviewProfile)
 	}
 	if opts.repoDir != "/tmp/repo" {
 		t.Errorf("repoDir = %q", opts.repoDir)

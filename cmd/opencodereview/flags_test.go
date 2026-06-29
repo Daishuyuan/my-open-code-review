@@ -22,6 +22,24 @@ func TestParseReviewFlagsModelOverride(t *testing.T) {
 	}
 }
 
+func TestParseReviewFlagsReviewProfile(t *testing.T) {
+	opts, err := parseReviewFlags([]string{"--review-profile", "codex-super"})
+	if err != nil {
+		t.Fatalf("parseReviewFlags: %v", err)
+	}
+	if opts.reviewProfile != "codex-super" {
+		t.Errorf("reviewProfile = %q, want codex-super", opts.reviewProfile)
+	}
+
+	opts, err = parseReviewFlags([]string{"--profile", "codex-super"})
+	if err != nil {
+		t.Fatalf("parseReviewFlags alias: %v", err)
+	}
+	if opts.reviewProfile != "codex-super" {
+		t.Errorf("profile alias reviewProfile = %q, want codex-super", opts.reviewProfile)
+	}
+}
+
 func TestParseReviewFlags_InvalidAudience(t *testing.T) {
 	_, err := parseReviewFlags([]string{"--audience", "robot"})
 	if err == nil {

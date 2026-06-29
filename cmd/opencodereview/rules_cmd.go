@@ -25,9 +25,11 @@ func runRules(args []string) error {
 
 func runRulesCheck(args []string) error {
 	a := newOcrFlagSet("ocr rules check")
-	var repoDir, rulePath string
+	var repoDir, rulePath, reviewProfile string
 	a.StringVar(&repoDir, "repo", "", "root directory of the git repository (default: current dir)")
 	a.StringVar(&rulePath, "rule", "", "path to JSON file with custom review rules")
+	a.StringVar(&reviewProfile, "review-profile", "", "built-in review profile to layer on resolved rules (available: codex-super)")
+	a.StringVar(&reviewProfile, "profile", "", "alias for --review-profile")
 	if err := a.Parse(args); err != nil {
 		return err
 	}
@@ -48,7 +50,7 @@ func runRulesCheck(args []string) error {
 		return err
 	}
 
-	resolver, _, err := rules.NewResolver(resolvedRepo, rulePath)
+	resolver, _, err := rules.NewResolverWithProfile(resolvedRepo, rulePath, reviewProfile)
 	if err != nil {
 		return fmt.Errorf("load rules: %w", err)
 	}
@@ -65,10 +67,14 @@ func runRulesCheck(args []string) error {
 		"project": "Project (.opencodereview/rule.json)",
 		"global":  "Global (~/.opencodereview/rule.json)",
 		"system":  "System built-in",
+		"profile": "Review profile",
 	}
 
 	fmt.Printf("File: %s\n", filePath)
 	fmt.Printf("Source: %s\n", sourceLabel[detail.Source])
+	if detail.Profile != "" {
+		fmt.Printf("Profile: %s\n", detail.Profile)
+	}
 	fmt.Printf("Pattern: %s\n", detail.Pattern)
 	fmt.Println("Rule:")
 	fmt.Println(strings.Repeat("─", 40))
@@ -95,10 +101,11 @@ func printRulesCheckUsage() {
 Show which review rule applies to the given file path, including its source layer and matched pattern.
 
 Flags:
-  --repo    Root directory of the git repository (default: current dir)
-  --rule    Path to a custom rule JSON file
+  --repo             Root directory of the git repository (default: current dir)
+  --rule             Path to a custom rule JSON file
+  --review-profile   Built-in review profile to layer on resolved rules
 
 Examples:
   ocr rules check src/main/java/com/example/Foo.java
-  ocr rules check --rule custom.json src/main/resources/mapper/UserMapper.xml`)
+  ocr rules check --review-profile codex-super --rule custom.json src/main/resources/mapper/UserMapper.xml`)
 }

@@ -252,8 +252,9 @@ func clearAllEnv(t *testing.T) {
 	t.Helper()
 	for _, k := range []string{
 		"OCR_LLM_URL", "OCR_LLM_TOKEN", "OCR_LLM_MODEL", "OCR_LLM_AUTH_HEADER", "OCR_USE_ANTHROPIC",
+		"OCR_CODEX_URL", "OCR_CODEX_TOKEN", "OCR_CODEX_MODEL", "OCR_CODEX_REASONING_EFFORT",
 		"ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_MODEL",
-		"ANTHROPIC_API_KEY", "OPENAI_API_KEY",
+		"ANTHROPIC_API_KEY", "OPENAI_API_KEY", "CODEX_API_KEY",
 	} {
 		t.Setenv(k, "")
 	}
@@ -318,6 +319,92 @@ func TestResolveEndpoint_ProviderOpenAI(t *testing.T) {
 	}
 	if ep.Model != "gpt-4o" {
 		t.Errorf("Model = %q, want %q", ep.Model, "gpt-4o")
+	}
+}
+
+func TestResolveEndpoint_ProviderCodexUsesLocalDefaults(t *testing.T) {
+	clearAllEnv(t)
+
+	cfg := configFile{
+		Provider: "codex",
+		Providers: map[string]providerEntryConfig{
+			"codex": {},
+		},
+	}
+	data, _ := json.Marshal(cfg)
+	cfgPath := filepath.Join(t.TempDir(), "config.json")
+	os.WriteFile(cfgPath, data, 0644)
+
+	ep, err := ResolveEndpoint(cfgPath)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if ep.URL != DefaultCodexBaseURL {
+		t.Errorf("URL = %q, want %q", ep.URL, DefaultCodexBaseURL)
+	}
+	if ep.Model != DefaultCodexModel {
+		t.Errorf("Model = %q, want %q", ep.Model, DefaultCodexModel)
+	}
+	if ep.Protocol != "openai" {
+		t.Errorf("Protocol = %q, want %q", ep.Protocol, "openai")
+	}
+	if ep.Token == "" {
+		t.Error("Token should have a non-secret local placeholder")
+	}
+	if ep.ExtraBody["reasoning_effort"] != DefaultCodexReasoningEffort {
+		t.Errorf("reasoning_effort = %v, want %q", ep.ExtraBody["reasoning_effort"], DefaultCodexReasoningEffort)
+	}
+}
+
+func TestResolveEndpoint_DefaultCodexLocalFallback(t *testing.T) {
+	clearAllEnv(t)
+
+	ep, ok, err := tryDefaultCodexLocal("")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !ok {
+		t.Fatal("expected local Codex fallback")
+	}
+	if ep.Source != "local Codex default" {
+		t.Errorf("Source = %q, want %q", ep.Source, "local Codex default")
+	}
+	if ep.URL != DefaultCodexBaseURL {
+		t.Errorf("URL = %q, want %q", ep.URL, DefaultCodexBaseURL)
+	}
+	if ep.Model != DefaultCodexModel {
+		t.Errorf("Model = %q, want %q", ep.Model, DefaultCodexModel)
+	}
+	if ep.ExtraBody["reasoning_effort"] != DefaultCodexReasoningEffort {
+		t.Errorf("reasoning_effort = %v, want %q", ep.ExtraBody["reasoning_effort"], DefaultCodexReasoningEffort)
+	}
+}
+
+func TestResolveEndpoint_DefaultCodexLocalEnvOverrides(t *testing.T) {
+	clearAllEnv(t)
+	t.Setenv("OCR_CODEX_URL", "http://localhost:9999/v1")
+	t.Setenv("OCR_CODEX_TOKEN", "test-token")
+	t.Setenv("OCR_CODEX_MODEL", "gpt-5.5-test")
+	t.Setenv("OCR_CODEX_REASONING_EFFORT", "medium")
+
+	ep, ok, err := tryDefaultCodexLocal("")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !ok {
+		t.Fatal("expected local Codex fallback")
+	}
+	if ep.URL != "http://localhost:9999/v1" {
+		t.Errorf("URL = %q", ep.URL)
+	}
+	if ep.Token != "test-token" {
+		t.Errorf("Token = %q", ep.Token)
+	}
+	if ep.Model != "gpt-5.5-test" {
+		t.Errorf("Model = %q", ep.Model)
+	}
+	if ep.ExtraBody["reasoning_effort"] != "medium" {
+		t.Errorf("reasoning_effort = %v", ep.ExtraBody["reasoning_effort"])
 	}
 }
 

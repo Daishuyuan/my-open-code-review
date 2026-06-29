@@ -203,6 +203,85 @@ func TestNewResolver_DefaultOnly(t *testing.T) {
 	}
 }
 
+func TestNewResolverWithProfile_AppendsCodexSuperToSystemRule(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
+	resolver, _, err := NewResolverWithProfile(t.TempDir(), "", "codex-super")
+	if err != nil {
+		t.Fatalf("NewResolverWithProfile: %v", err)
+	}
+
+	got := resolver.Resolve("internal/review.go")
+	for _, want := range []string{
+		"Review Profile: codex-super",
+		"Findings Contract",
+		"Correctness",
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("expected resolved rule to contain %q, got %q", want, truncate(got, 200))
+		}
+	}
+}
+
+func TestNewResolverWithProfile_PreservesProjectRulePriority(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+	dir := t.TempDir()
+	ocrDir := filepath.Join(dir, ".opencodereview")
+	if err := os.MkdirAll(ocrDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	ruleJSON := `{"rules":[{"path":"**/*.go","rule":"project-go-rule"}]}`
+	if err := os.WriteFile(filepath.Join(ocrDir, "rule.json"), []byte(ruleJSON), 0o644); err != nil {
+		t.Fatalf("write rule.json: %v", err)
+	}
+
+	resolver, _, err := NewResolverWithProfile(dir, "", "codex-super")
+	if err != nil {
+		t.Fatalf("NewResolverWithProfile: %v", err)
+	}
+
+	got := resolver.Resolve("main.go")
+	if !strings.Contains(got, "Review Profile: codex-super") {
+		t.Fatalf("expected profile guidance, got %q", truncate(got, 200))
+	}
+	if !strings.Contains(got, "project-go-rule") {
+		t.Fatalf("expected project rule to remain active, got %q", truncate(got, 200))
+	}
+}
+
+func TestNewResolverWithProfile_DetailIncludesProfile(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
+	resolver, _, err := NewResolverWithProfile(t.TempDir(), "", "codex-super")
+	if err != nil {
+		t.Fatalf("NewResolverWithProfile: %v", err)
+	}
+	dr := resolver.(DetailResolver)
+
+	detail := dr.ResolveDetail("readme.md")
+	if detail.Profile != "codex-super" {
+		t.Fatalf("expected profile codex-super, got %q", detail.Profile)
+	}
+	if detail.Source != "system" {
+		t.Fatalf("expected original source to remain system, got %q", detail.Source)
+	}
+	if !strings.Contains(detail.Rule, "Review Profile: codex-super") {
+		t.Fatalf("expected profile content in detail rule, got %q", truncate(detail.Rule, 200))
+	}
+}
+
+func TestNewResolverWithProfile_RejectsUnknownProfile(t *testing.T) {
+	t.Setenv("HOME", t.TempDir())
+
+	_, _, err := NewResolverWithProfile(t.TempDir(), "", "unknown")
+	if err == nil {
+		t.Fatal("expected error for unknown review profile")
+	}
+	if !strings.Contains(err.Error(), "available: codex-super") {
+		t.Fatalf("expected available profile hint, got %v", err)
+	}
+}
+
 func TestNewResolver_ProjectFileMissing(t *testing.T) {
 	resolver, _, err := NewResolver(t.TempDir(), "")
 

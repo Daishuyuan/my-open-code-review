@@ -1,12 +1,12 @@
 {
   "name": "open-code-review",
   "version": "1.0.0",
-  "description": "Use Alibaba Open Code Review from local Codex.",
+  "description": "Use My Open Code Review from local Codex.",
   "author": {
-    "name": "Alibaba"
+    "name": "Daishuyuan"
   },
-  "homepage": "https://github.com/alibaba/open-code-review",
-  "repository": "https://github.com/alibaba/open-code-review",
+  "homepage": "https://github.com/Daishuyuan/my-open-code-review",
+  "repository": "https://github.com/Daishuyuan/my-open-code-review",
   "license": "Apache-2.0",
   "keywords": [
     "code-review",
@@ -19,12 +19,12 @@
     "displayName": "Open Code Review",
     "shortDescription": "Run structured code reviews from local Codex.",
     "longDescription": "Adds a Codex skill that invokes the local Open Code Review CLI to review Git workspace changes, commits, and branch comparisons.",
-    "developerName": "Alibaba",
+    "developerName": "Daishuyuan",
     "category": "Developer Tools",
     "capabilities": [
       "Read"
     ],
-    "websiteURL": "https://github.com/alibaba/open-code-review",
+    "websiteURL": "https://github.com/Daishuyuan/my-open-code-review",
     "defaultPrompt": [
       "Use Open Code Review to review my current changes.",
       "Use Open Code Review to review this branch against main.",

@@ -70,7 +70,7 @@ function getInstalledVersion(binPath) {
 }
 
 function fetchLatestVersion(pkg) {
-  const registry = (pkg.publishConfig && pkg.publishConfig.registry) || DEFAULT_REGISTRY;
+  const registry = process.env.OCR_NPM_REGISTRY || (pkg.publishConfig && pkg.publishConfig.registry) || DEFAULT_REGISTRY;
   const pkgName = pkg.name;
   if (!pkgName) return Promise.resolve(null);
   const encodedName = pkgName.replace(/\//g, "%2F");

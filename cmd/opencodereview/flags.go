@@ -97,6 +97,7 @@ func expandShortFlags(args []string, shortMap map[string]string) []string {
 type reviewOptions struct {
 	toolConfigPath string
 	rulePath       string
+	reviewProfile  string
 	repoDir        string
 	from           string
 	to             string
@@ -121,6 +122,8 @@ func parseReviewFlags(args []string) (reviewOptions, error) {
 
 	a.StringVar(&opts.toolConfigPath, "tools", "", "path to JSON tools config file (default: embedded)")
 	a.StringVar(&opts.rulePath, "rule", "", "path to JSON file with system review rules")
+	a.StringVar(&opts.reviewProfile, "review-profile", "", "built-in review profile to layer on resolved rules (available: codex-super)")
+	a.StringVar(&opts.reviewProfile, "profile", "", "alias for --review-profile")
 	a.StringVar(&opts.repoDir, "repo", "", "root directory of the git repository (default: current dir)")
 	a.StringVar(&opts.from, "from", "", "source ref to start diff from (e.g., 'main')")
 	a.StringVar(&opts.to, "to", "", "target ref to end diff at (e.g., 'feature-branch')")
@@ -225,6 +228,7 @@ Flags:
   --max-tools int         max tool call rounds per file (0 = template default; min 10)
   --model string          override LLM model for this review (e.g., claude-opus-4-6)
   -p, --preview           preview which files will be reviewed without running the LLM
+  --review-profile string built-in review profile to layer on resolved rules (available: codex-super)
   --repo string           root directory of the git repository (default: current dir)
   --rule string           path to JSON file with system review rules
   --timeout int           concurrent task timeout in minutes (default 10)

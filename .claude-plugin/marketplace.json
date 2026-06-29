@@ -1,7 +1,7 @@
 {
   "name": "open-code-review",
   "owner": {
-    "name": "alibaba"
+    "name": "Daishuyuan"
   },
   "description": "AI-powered code review agent that reads Git diffs, analyzes changed files with LLM tool-use capabilities, and generates structured line-level review comments with cross-referential context awareness.",
   "plugins": [

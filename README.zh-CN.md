@@ -11,11 +11,10 @@
   </a>
 </p>
 <p align="center">
-  <a href="https://www.npmjs.com/package/@alibaba-group/open-code-review"><img alt="npm" src="https://img.shields.io/npm/v/@alibaba-group/open-code-review?style=flat-square" /></a>
-  <a href="https://github.com/alibaba/open-code-review/actions/workflows/release.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/alibaba/open-code-review/release.yml?style=flat-square" /></a>
-  <a href="https://goreportcard.com/report/github.com/alibaba/open-code-review"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/alibaba/open-code-review?style=flat-square" /></a>
-  <a href="https://github.com/alibaba/open-code-review/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/alibaba/open-code-review?style=flat-square" /></a>
-  <a href="https://deepwiki.com/alibaba/open-code-review"><img alt="Ask DeepWiki" src="https://deepwiki.com/badge.svg" /></a>
+  <a href="https://www.npmjs.com/package/my-open-code-review"><img alt="npm" src="https://img.shields.io/npm/v/my-open-code-review?style=flat-square" /></a>
+  <a href="https://github.com/Daishuyuan/my-open-code-review/actions/workflows/release.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/Daishuyuan/my-open-code-review/release.yml?style=flat-square" /></a>
+  <a href="https://goreportcard.com/report/github.com/open-code-review/open-code-review"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/open-code-review/open-code-review?style=flat-square" /></a>
+  <a href="https://github.com/Daishuyuan/my-open-code-review/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/Daishuyuan/my-open-code-review?style=flat-square" /></a>
   <a href="https://www.bestpractices.dev/projects/13328"><img alt="OpenSSF Best Practices" src="https://img.shields.io/badge/OpenSSF-Silver-4C566A?style=flat-square" /></a>
 </p>
 <p align="center">
@@ -97,7 +96,7 @@ Open Code Review 的核心设计理念是将确定性工程与 Agent 结合，�
 **通过 NPM 安装（推荐）**
 
 ```bash
-npm install -g @alibaba-group/open-code-review
+npm install -g my-open-code-review
 ```
 
 安装后，`ocr` 命令即可全局使用。
@@ -107,43 +106,43 @@ npm install -g @alibaba-group/open-code-review
 使用一条命令为你的操作系统/架构安装最新二进制文件（macOS / Linux）：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/alibaba/open-code-review/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Daishuyuan/my-open-code-review/main/install.sh | sh
 ```
 
 该脚本会自动选择匹配的发布二进制文件，校验其 SHA-256 校验和，并将其作为 `ocr` 安装到 `/usr/local/bin`。可通过 `OCR_INSTALL_DIR` 覆盖安装目录，或通过 `OCR_VERSION` 指定发布版本：
 
 ```bash
 OCR_INSTALL_DIR="$HOME/.local/bin" OCR_VERSION=v1.3.13 \
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/alibaba/open-code-review/main/install.sh)"
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/Daishuyuan/my-open-code-review/main/install.sh)"
 ```
 
 <details>
 <summary>手动下载（所有平台，包括 Windows）</summary>
 
-从 [GitHub Releases](https://github.com/alibaba/open-code-review/releases) 下载适用于你平台的二进制文件：
+从 [GitHub Releases](https://github.com/Daishuyuan/my-open-code-review/releases) 下载适用于你平台的二进制文件：
 
 ```bash
 # macOS (Apple Silicon)
-curl -Lo ocr https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-darwin-arm64
+curl -Lo ocr https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-darwin-arm64
 chmod +x ocr && sudo mv ocr /usr/local/bin/ocr
 
 # macOS (Intel)
-curl -Lo ocr https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-darwin-amd64
+curl -Lo ocr https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-darwin-amd64
 chmod +x ocr && sudo mv ocr /usr/local/bin/ocr
 
 # Linux (x86_64)
-curl -Lo ocr https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-linux-amd64
+curl -Lo ocr https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-linux-amd64
 chmod +x ocr && sudo mv ocr /usr/local/bin/ocr
 
 # Linux (ARM64)
-curl -Lo ocr https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-linux-arm64
+curl -Lo ocr https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-linux-arm64
 chmod +x ocr && sudo mv ocr /usr/local/bin/ocr
 
 # Windows (x86_64) — 将 ocr.exe 移动到 PATH 目录中
-curl -Lo ocr.exe https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-windows-amd64.exe
+curl -Lo ocr.exe https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-windows-amd64.exe
 
 # Windows (ARM64) — 将 ocr.exe 移动到 PATH 目录中
-curl -Lo ocr.exe https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-windows-arm64.exe
+curl -Lo ocr.exe https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-windows-arm64.exe
 ```
 
 </details>
@@ -151,8 +150,8 @@ curl -Lo ocr.exe https://github.com/alibaba/open-code-review/releases/latest/dow
 **从源码构建**
 
 ```bash
-git clone https://github.com/alibaba/open-code-review.git
-cd open-code-review
+git clone https://github.com/Daishuyuan/my-open-code-review.git
+cd my-open-code-review
 make build
 sudo cp dist/opencodereview /usr/local/bin/ocr
 ```
@@ -161,7 +160,7 @@ sudo cp dist/opencodereview /usr/local/bin/ocr
 
 **1. 配置 LLM**
 
-**在审查代码之前，必须先配置 LLM。**
+默认情况下，如果没有显式 OCR 配置，本 fork 会优先尝试本地 Codex 兼容端点：`http://127.0.0.1:15721/v1`，模型 `gpt-5.5`，`reasoning_effort=high`。如果该端点不可用，请先配置其他供应商再审查代码。
 
 OCR 通过**供应商（Provider）**模式统一管理 LLM 配置，内置了多种主流供应商，也支持添加自定义供应商以对接私有部署或其他兼容端点。配置存储于 `~/.opencodereview/config.json`。
 
@@ -187,6 +186,9 @@ ocr config model             # 为当前供应商选择模型
 使用内置供应商：
 
 ```bash
+ocr config set provider codex
+ocr config set providers.codex.model gpt-5.5
+
 ocr config set provider anthropic
 ocr config set providers.anthropic.api_key your-api-key-here
 ocr config set providers.anthropic.model claude-sonnet-4-6
@@ -203,6 +205,14 @@ ocr config set custom_providers.my-gateway.model gpt-4o
 ```
 
 > 自定义供应商的 `url` 和 `protocol` 为必填项。`protocol` 支持 `anthropic` 和 `openai` 两种。
+
+本地 Codex 默认值也可以通过环境变量覆盖，无需写配置文件：
+
+```bash
+export OCR_CODEX_URL=http://127.0.0.1:15721/v1
+export OCR_CODEX_MODEL=gpt-5.5
+export OCR_CODEX_REASONING_EFFORT=high
+```
 
 可选配置项：
 
@@ -277,7 +287,7 @@ OCR 可以无缝集成到 AI 编程 Agent 中，作为斜杠命令使用，在 A
 使用 `npx` 将 OCR skill 安装到项目中：
 
 ```bash
-npx skills add alibaba/open-code-review --skill open-code-review
+npx skills add Daishuyuan/my-open-code-review --skill open-code-review
 ```
 
 此命令从 [skills 注册表](skills/open-code-review/SKILL.md)安装 `open-code-review` skill，教会你的编程 Agent 如何调用 `ocr` 进行代码审查、按优先级分类问题，并可选择性地应用修复。
@@ -287,7 +297,7 @@ npx skills add alibaba/open-code-review --skill open-code-review
 对于 [Claude Code](https://docs.anthropic.com/en/docs/claude-code)，在 Claude Code 中通过以下命令安装命令插件：
 
 ```bash
-/plugin marketplace add alibaba/open-code-review
+/plugin marketplace add Daishuyuan/my-open-code-review
 /plugin install open-code-review@open-code-review
 ```
 
@@ -298,7 +308,7 @@ npx skills add alibaba/open-code-review --skill open-code-review
 对于本地 Codex，可以从此仓库安装 Open Code Review plugin：
 
 ```bash
-codex plugin marketplace add alibaba/open-code-review
+codex plugin marketplace add Daishuyuan/my-open-code-review
 codex
 /plugins
 ```
@@ -322,10 +332,10 @@ codex
 这会注册一个 Codex skill，用于运行本地 OCR CLI：
 
 ```bash
-ocr review --audience agent
+ocr review --audience agent --review-profile codex-super
 ```
 
-此集成不会改变 OCR 的内部 LLM backend，也不需要为 Codex 配置 OpenAI Responses API endpoint。OCR 本身仍需要按照 CLI setup 部分安装并配置 `ocr` CLI。
+本 fork 在没有显式 OCR 配置时，会默认将 OCR 的内部 LLM backend 指向本地 Codex。可通过 `OCR_CODEX_URL`、`OCR_CODEX_MODEL`、`OCR_CODEX_REASONING_EFFORT` 或常规 `ocr config provider` 流程覆盖。
 
 韩文指南：[`plugins/open-code-review/CODEX.ko-KR.md`](plugins/open-code-review/CODEX.ko-KR.md)
 
@@ -334,7 +344,7 @@ ocr review --audience agent
 对于 [Cursor](https://www.cursor.com/)，可以从此仓库安装 Open Code Review plugin：
 
 ```
-cursor-plugin marketplace add alibaba/open-code-review
+cursor-plugin marketplace add Daishuyuan/my-open-code-review
 ```
 
 也可以手动添加 marketplace。在 Cursor 中打开 `/plugins`，搜索 `Open Code Review` 并安装。
@@ -359,7 +369,7 @@ cursor-plugin marketplace add .
 ocr review --audience agent
 ```
 
-此集成不会改变 OCR 的内部 LLM backend。OCR 本身仍需要按照 CLI setup 部分安装并配置 `ocr` CLI。
+本 fork 在没有显式 OCR 配置时，会默认将 OCR 的内部 LLM backend 指向本地 Codex。可通过 `OCR_CODEX_URL`、`OCR_CODEX_MODEL`、`OCR_CODEX_REASONING_EFFORT` 或常规 provider 设置流程覆盖。
 
 #### 方式五：直接复制命令文件
 
@@ -370,7 +380,7 @@ ocr review --audience agent
 ```bash
 mkdir -p .claude/commands
 curl -o .claude/commands/open-code-review.md \
-  https://raw.githubusercontent.com/alibaba/open-code-review/main/plugins/open-code-review/commands/review.md
+  https://raw.githubusercontent.com/Daishuyuan/my-open-code-review/main/plugins/open-code-review/commands/review.md
 ```
 
 **用户级**（个人全局使用，适用于所有项目）：
@@ -378,10 +388,10 @@ curl -o .claude/commands/open-code-review.md \
 ```bash
 mkdir -p ~/.claude/commands
 curl -o ~/.claude/commands/open-code-review.md \
-  https://raw.githubusercontent.com/alibaba/open-code-review/main/plugins/open-code-review/commands/review.md
+  https://raw.githubusercontent.com/Daishuyuan/my-open-code-review/main/plugins/open-code-review/commands/review.md
 ```
 
-> **前置条件**：所有集成方式都需要安装 `ocr` CLI 并配置 LLM。参见上方[安装](#安装)和[配置 LLM](#1-配置-llm)。
+> **前置条件**：所有集成方式都需要安装 `ocr` CLI。如果本地 Codex 兼容端点可用，LLM 配置可省略；否则按上文配置 provider。
 
 ### CI/CD 集成
 
@@ -436,6 +446,7 @@ ocr review \
 | `--background` | `-b` | — | 可选的需求/业务背景信息；使用 `--commit` 时如未指定则自动从 commit message 中提取 |
 | `--model` | — | — | 为本次审查选择或覆盖 LLM 模型 |
 | `--rule` | — | — | 自定义 JSON 审查规则路径 |
+| `--review-profile` | `--profile` | — | 叠加到已解析规则之上的内置审查 profile；当前可用：`codex-super` |
 | `--max-tools` | — | 内置默认 | 每个文件的最大工具调用轮次；仅在大于模板默认值时生效 |
 | `--max-git-procs` | — | 内置默认 | 最大并发 git 子进程数 |
 | `--tools` | — | — | 自定义 JSON 工具配置路径 |
@@ -457,6 +468,7 @@ ocr review \
 | `--format` | `-f` | `text` | 输出格式：`text` 或 `json`（JSON 包含 `project_summary` 字段） |
 | `--concurrency` | — | `8` | 最大并发文件扫描数 |
 | `--rule` | — | — | 自定义 JSON 审查规则路径 |
+| `--review-profile` | `--profile` | — | 叠加到已解析规则之上的内置审查 profile；当前可用：`codex-super` |
 | `--repo` | — | 当前目录 | 要扫描的仓库或目录根路径 |
 
 每次运行前，`ocr scan` 会打印粗略的 token 费用估算。使用 `--preview` 先查看文件列表，使用 `--max-tokens-budget` 限制大型仓库的开销。
@@ -522,6 +534,11 @@ ocr viewer --addr :3000
 ## 评审规则
 
 OCR 通过四层优先级链解析评审规则。每层采用首次匹配原则：如果文件路径匹配到某个模式，则使用该规则；否则穿透到下一层。
+
+可选的 review profile 会叠加在最终解析出的规则之上，不改变下面的规则优先级。使用
+`--review-profile codex-super` 可以启用 Codex 风格的 findings-first 审查契约、严重性
+分级、changed-line relevance 规则，以及 bug/security/contracts/tests/quality/history
+风险镜头。Codex plugin 默认使用该 profile；普通 CLI 调用默认不启用。
 
 | 优先级 | 来源 | 路径 | 描述 |
 |--------|------|------|------|

@@ -7,16 +7,40 @@ import (
 
 // Provider holds the preset configuration for a known LLM provider.
 type Provider struct {
-	Name        string
-	DisplayName string
-	Protocol    string // "anthropic" or "openai"
-	BaseURL     string
-	AuthHeader  string // Anthropic-only; empty for OpenAI-compatible
-	EnvVar      string // environment variable name for API key fallback
-	Models      []string
+	Name         string
+	DisplayName  string
+	Protocol     string // "anthropic" or "openai"
+	BaseURL      string
+	AuthHeader   string // Anthropic-only; empty for OpenAI-compatible
+	EnvVar       string // environment variable name for API key fallback
+	DefaultToken string // non-secret placeholder token for local providers that do not require auth
+	DefaultModel string
+	ExtraBody    map[string]any
+	Models       []string
 }
 
+const (
+	DefaultCodexBaseURL         = "http://127.0.0.1:15721/v1"
+	DefaultCodexModel           = "gpt-5.5"
+	DefaultCodexReasoningEffort = "high"
+)
+
 var registry = []Provider{
+	{
+		Name:         "codex",
+		DisplayName:  "Local Codex API",
+		Protocol:     "openai",
+		BaseURL:      DefaultCodexBaseURL,
+		EnvVar:       "CODEX_API_KEY",
+		DefaultToken: "local-codex",
+		DefaultModel: DefaultCodexModel,
+		ExtraBody: map[string]any{
+			"reasoning_effort": DefaultCodexReasoningEffort,
+		},
+		Models: []string{
+			DefaultCodexModel,
+		},
+	},
 	{
 		Name:        "anthropic",
 		DisplayName: "Anthropic Claude API",
@@ -251,6 +275,13 @@ func copyProvider(p Provider) Provider {
 		models := make([]string, len(p.Models))
 		copy(models, p.Models)
 		p.Models = models
+	}
+	if p.ExtraBody != nil {
+		extraBody := make(map[string]any, len(p.ExtraBody))
+		for k, v := range p.ExtraBody {
+			extraBody[k] = v
+		}
+		p.ExtraBody = extraBody
 	}
 	return p
 }

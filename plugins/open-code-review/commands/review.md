@@ -11,14 +11,15 @@ Invoke the professional code review Agent CLI tool OpenCodeReview (OCR) to revie
 Run the OCR command:
 
 ```bash
-ocr review --audience agent [user-args]
+ocr review --audience agent --review-profile codex-super [user-args]
 ```
 - Default (no user arguments): reviews staged, unstaged, and untracked changes (workspace mode).
+- Always include `--review-profile codex-super` from this Codex plugin command. It imports the Codex review contract without changing OCR's global CLI default.
 - If the user provides `--commit` or `--c`: pass through as-is.
 - If the user provides `--from` and `--to`: pass through as-is.
 - (Optional) Provide `--background "requirement context"` to review whether the requirements are correctly implemented.
 - Capture full stdout. Set a 5-minute timeout.
-- If the `ocr` command is not found, install it by running `npm i -g @alibaba-group/open-code-review`.
+- If the `ocr` command is not found, install it by running `npm i -g my-open-code-review` or build this checkout with `make build`.
 
 ### Step 2: Filter and Evaluate
 

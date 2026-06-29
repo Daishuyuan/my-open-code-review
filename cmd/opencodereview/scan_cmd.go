@@ -21,6 +21,7 @@ import (
 type scanOptions struct {
 	toolConfigPath  string
 	rulePath        string
+	reviewProfile   string
 	repoDir         string
 	paths           string // comma-separated relative paths; empty = whole repo
 	excludes        string // comma-separated gitignore-style exclude patterns
@@ -47,6 +48,8 @@ func parseScanFlags(args []string) (scanOptions, error) {
 
 	a.StringVar(&opts.toolConfigPath, "tools", "", "path to JSON tools config file (default: embedded)")
 	a.StringVar(&opts.rulePath, "rule", "", "path to JSON file with system review rules")
+	a.StringVar(&opts.reviewProfile, "review-profile", "", "built-in review profile to layer on resolved rules (available: codex-super)")
+	a.StringVar(&opts.reviewProfile, "profile", "", "alias for --review-profile")
 	a.StringVar(&opts.repoDir, "repo", "", "root directory of the git repository (default: current dir)")
 	a.StringVar(&opts.paths, "path", "", "comma-separated repo-relative directories or files to scan (default: whole repo)")
 	a.StringVar(&opts.excludes, "exclude", "", "comma-separated gitignore-style patterns to exclude; merged with rule.json excludes")
@@ -120,7 +123,7 @@ func runScan(args []string) error {
 
 	// scan path: git is preferred (more accurate .gitignore handling) but not required;
 	// provider falls back to filepath.Walk when the dir is not a git repo.
-	cc, err := loadCommonContext(opts.repoDir, opts.rulePath, opts.maxTools, opts.maxGitProcs, false)
+	cc, err := loadCommonContext(opts.repoDir, opts.rulePath, opts.reviewProfile, opts.maxTools, opts.maxGitProcs, false)
 	if err != nil {
 		return err
 	}
@@ -274,6 +277,7 @@ Flags:
   --batch string          override BATCH_STRATEGY: none | by-language | by-directory
   --max-tokens-budget int cap total token usage; dispatch stops once exceeded (0 = unlimited)
   --model string          override LLM model for this scan (e.g., claude-opus-4-6)
+  --review-profile string built-in review profile to layer on resolved rules (available: codex-super)
   --audience string       output audience: human (show progress) or agent (summary only) (default "human")
   -b, --background string optional requirement/business context for the scan
   -f, --format string     output format: text or json (default "text")

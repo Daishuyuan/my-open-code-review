@@ -2,7 +2,7 @@
 name: open-code-review
 description: >
   Performs AI-powered code review on Git changes using the `ocr` CLI from
-  alibaba/open-code-review. Use when the user asks to review code, review
+  Daishuyuan/my-open-code-review. Use when the user asks to review code, review
   a pull request, review staged/unstaged changes, review a commit, or
   compare branches for code quality issues. Produces line-level review
   comments and can automatically apply fixes when requested. With appropriate
@@ -11,11 +11,11 @@ description: >
 license: Apache-2.0
 compatibility: >
   Requires the `ocr` CLI installed (via `npm install -g
-  @alibaba-group/open-code-review` or GitHub release binary). Requires a
-  configured LLM (Anthropic or OpenAI-compatible) before first run.
+  my-open-code-review`, local source build, or GitHub release binary). Defaults
+  to local Codex (`gpt-5.5`, high reasoning) when no explicit OCR config exists.
 metadata:
-  author: alibaba
-  homepage: https://github.com/alibaba/open-code-review
+  author: Daishuyuan
+  homepage: https://github.com/Daishuyuan/my-open-code-review
   version: "1.0.0"
 ---
 
@@ -26,7 +26,7 @@ This Codex plugin skill intentionally mirrors the canonical skill at
 OCR agent instructions; a symlink is avoided because plugin installs may only
 materialize the plugin subtree.
 
-A skill for invoking [open-code-review](https://github.com/alibaba/open-code-review) (`ocr`) — an open-source AI code review CLI that reads Git diffs and generates structured, line-level review comments.
+A skill for invoking [my-open-code-review](https://github.com/Daishuyuan/my-open-code-review) (`ocr`) — an open-source AI code review CLI that reads Git diffs and generates structured, line-level review comments.
 
 ## Prerequisites check
 
@@ -43,10 +43,18 @@ ocr llm test
 If `ocr` is not installed, install it first:
 
 ```bash
-npm install -g @alibaba-group/open-code-review
+npm install -g my-open-code-review
 ```
 
-If `ocr llm test` fails, the user must configure an LLM. Guide them with one of these options:
+This fork defaults to local Codex when no explicit OCR config exists:
+
+```bash
+export OCR_CODEX_URL=http://127.0.0.1:15721/v1
+export OCR_CODEX_MODEL=gpt-5.5
+export OCR_CODEX_REASONING_EFFORT=high
+```
+
+If `ocr llm test` fails and local Codex is unavailable, guide the user with one of these options:
 
 **Option A — Environment variables (highest priority, recommended for CI):**
 
@@ -60,6 +68,9 @@ export OCR_USE_ANTHROPIC=true
 **Option B — Persistent config:**
 
 ```bash
+ocr config set provider codex
+ocr config set providers.codex.model gpt-5.5
+
 ocr config set llm.url https://api.anthropic.com/v1/messages
 ocr config set llm.auth_token <api-key>
 ocr config set llm.model claude-opus-4-6
@@ -76,14 +87,15 @@ Analyze the review target (commits, branch, or changes) to extract concise busin
 
 ### Step 2: Run Code Review
 
-Run the OCR command with appropriate flags. **Always pass business context via `--background`** when available:
+Run the OCR command with appropriate flags. **Always use the Codex review profile and pass business context via `--background`** when available:
 
 ```bash
-ocr review --audience agent --background "business context here" [user-args]
+ocr review --audience agent --review-profile codex-super --background "business context here" [user-args]
 ```
 
 **Argument handling:**
 
+- **Codex profile** (DEFAULT for this skill): use `--review-profile codex-super` to enable the imported Codex `code-review` contract without changing OCR's global CLI default
 - **Background context** (RECOMMENDED): use `--background "context"` or `-b "context"` to provide business context for better review quality
 - **Default** (no user arguments): reviews staged, unstaged, and untracked changes (workspace mode)
 - **Specific commit**: use `--commit` or `-c` to review a single commit against its parent
@@ -91,15 +103,15 @@ ocr review --audience agent --background "business context here" [user-args]
 - **Timeout**: default timeout is 10 minutes per file; adjust with `--timeout <minutes>`
 - **Concurrency**: default concurrency is 8 file workers; reduce with `--concurrency <n>` if rate limits are hit
 - **Preview mode**: use `--preview` or `-p` to preview which files will be reviewed without running the LLM
-- **Installation**: if `ocr` command is not found, install it by running `npm i -g @alibaba-group/open-code-review`
+- **Installation**: if `ocr` command is not found, install it by running `npm i -g my-open-code-review` or build this checkout with `make build`
 
 **Common invocation patterns:**
 
 | User says | Command to run |
 |-----------|---------------|
-| "review my changes" / "review the working copy" | `ocr review --audience agent -b "context"` |
-| "review this PR" / "review feature branch" | `ocr review --audience agent -b "context" --from main --to <branch>` |
-| "review commit abc123" | `ocr review --audience agent -b "context" --commit abc123` |
+| "review my changes" / "review the working copy" | `ocr review --audience agent --review-profile codex-super -b "context"` |
+| "review this PR" / "review feature branch" | `ocr review --audience agent --review-profile codex-super -b "context" --from main --to <branch>` |
+| "review commit abc123" | `ocr review --audience agent --review-profile codex-super -b "context" --commit abc123` |
 | "what would be reviewed?" (dry-run) | `ocr review --preview` |
 
 **Output mode:**
@@ -179,6 +191,11 @@ When `start_line` and `end_line` are both `0`, the comment failed to locate the 
 
 ## Custom Review Rules
 
+This fork also supports optional built-in review profiles. The Codex skill uses
+`--review-profile codex-super` by default. The profile layers a findings-first
+review contract, severity rubric, changed-line relevance rules, and risk lenses
+on top of whichever rule OCR resolves below.
+
 If the user wants project-specific rules, OCR resolves them in this priority order:
 
 1. `--rule <path>` flag (highest)
@@ -209,7 +226,7 @@ Rule file format:
 To preview which rule applies to a file before reviewing:
 
 ```bash
-ocr rules check src/main/java/com/example/Foo.java
+ocr rules check --review-profile codex-super src/main/java/com/example/Foo.java
 ```
 
 ## Gotchas
@@ -234,6 +251,6 @@ If errors occurred, check the stderr warnings for details about which files fail
 
 ## References
 
-- Full docs: https://github.com/alibaba/open-code-review
-- NPM package: https://www.npmjs.com/package/@alibaba-group/open-code-review
-- Issue tracker: https://github.com/alibaba/open-code-review/issues
+- Full docs: https://github.com/Daishuyuan/my-open-code-review
+- NPM package: https://www.npmjs.com/package/my-open-code-review
+- Issue tracker: https://github.com/Daishuyuan/my-open-code-review/issues

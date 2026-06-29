@@ -11,11 +11,10 @@
   </a>
 </p>
 <p align="center">
-  <a href="https://www.npmjs.com/package/@alibaba-group/open-code-review"><img alt="npm" src="https://img.shields.io/npm/v/@alibaba-group/open-code-review?style=flat-square" /></a>
-  <a href="https://github.com/alibaba/open-code-review/actions/workflows/release.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/alibaba/open-code-review/release.yml?style=flat-square" /></a>
-  <a href="https://goreportcard.com/report/github.com/alibaba/open-code-review"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/alibaba/open-code-review?style=flat-square" /></a>
-  <a href="https://github.com/alibaba/open-code-review/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/alibaba/open-code-review?style=flat-square" /></a>
-  <a href="https://deepwiki.com/alibaba/open-code-review"><img alt="Ask DeepWiki" src="https://deepwiki.com/badge.svg" /></a>
+  <a href="https://www.npmjs.com/package/my-open-code-review"><img alt="npm" src="https://img.shields.io/npm/v/my-open-code-review?style=flat-square" /></a>
+  <a href="https://github.com/Daishuyuan/my-open-code-review/actions/workflows/release.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/Daishuyuan/my-open-code-review/release.yml?style=flat-square" /></a>
+  <a href="https://goreportcard.com/report/github.com/open-code-review/open-code-review"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/open-code-review/open-code-review?style=flat-square" /></a>
+  <a href="https://github.com/Daishuyuan/my-open-code-review/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/Daishuyuan/my-open-code-review?style=flat-square" /></a>
   <a href="https://www.bestpractices.dev/projects/13328"><img alt="OpenSSF Best Practices" src="https://img.shields.io/badge/OpenSSF-Silver-4C566A?style=flat-square" /></a>
 </p>
 <p align="center">
@@ -97,7 +96,7 @@ The agent's strengths are concentrated where they matter most — dynamic decisi
 **Via NPM (Recommended)**
 
 ```bash
-npm install -g @alibaba-group/open-code-review
+npm install -g my-open-code-review
 ```
 
 After installation, the `ocr` command is available globally.
@@ -107,43 +106,43 @@ After installation, the `ocr` command is available globally.
 Install the latest binary for your OS/architecture with one command (macOS / Linux):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/alibaba/open-code-review/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/Daishuyuan/my-open-code-review/main/install.sh | sh
 ```
 
 The script picks the right release binary, verifies its SHA-256 checksum, and installs it as `ocr` in `/usr/local/bin`. Override the target with `OCR_INSTALL_DIR` or pin a release with `OCR_VERSION`:
 
 ```bash
 OCR_INSTALL_DIR="$HOME/.local/bin" OCR_VERSION=v1.3.13 \
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/alibaba/open-code-review/main/install.sh)"
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/Daishuyuan/my-open-code-review/main/install.sh)"
 ```
 
 <details>
 <summary>Manual download (all platforms, including Windows)</summary>
 
-Download the binary for your platform from [GitHub Releases](https://github.com/alibaba/open-code-review/releases):
+Download the binary for your platform from [GitHub Releases](https://github.com/Daishuyuan/my-open-code-review/releases):
 
 ```bash
 # macOS (Apple Silicon)
-curl -Lo ocr https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-darwin-arm64
+curl -Lo ocr https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-darwin-arm64
 chmod +x ocr && sudo mv ocr /usr/local/bin/ocr
 
 # macOS (Intel)
-curl -Lo ocr https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-darwin-amd64
+curl -Lo ocr https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-darwin-amd64
 chmod +x ocr && sudo mv ocr /usr/local/bin/ocr
 
 # Linux (x86_64)
-curl -Lo ocr https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-linux-amd64
+curl -Lo ocr https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-linux-amd64
 chmod +x ocr && sudo mv ocr /usr/local/bin/ocr
 
 # Linux (ARM64)
-curl -Lo ocr https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-linux-arm64
+curl -Lo ocr https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-linux-arm64
 chmod +x ocr && sudo mv ocr /usr/local/bin/ocr
 
 # Windows (x86_64) — move ocr.exe to a directory in your PATH
-curl -Lo ocr.exe https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-windows-amd64.exe
+curl -Lo ocr.exe https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-windows-amd64.exe
 
 # Windows (ARM64) — move ocr.exe to a directory in your PATH
-curl -Lo ocr.exe https://github.com/alibaba/open-code-review/releases/latest/download/opencodereview-windows-arm64.exe
+curl -Lo ocr.exe https://github.com/Daishuyuan/my-open-code-review/releases/latest/download/opencodereview-windows-arm64.exe
 ```
 
 </details>
@@ -151,8 +150,8 @@ curl -Lo ocr.exe https://github.com/alibaba/open-code-review/releases/latest/dow
 **From Source**
 
 ```bash
-git clone https://github.com/alibaba/open-code-review.git
-cd open-code-review
+git clone https://github.com/Daishuyuan/my-open-code-review.git
+cd my-open-code-review
 make build
 sudo cp dist/opencodereview /usr/local/bin/ocr
 ```
@@ -161,7 +160,7 @@ sudo cp dist/opencodereview /usr/local/bin/ocr
 
 **1. Configure LLM**
 
-**You must configure an LLM before reviewing code.**
+By default, this fork tries a local Codex-compatible endpoint first when no explicit OCR config is present: `http://127.0.0.1:15721/v1`, model `gpt-5.5`, `reasoning_effort=high`. If that endpoint is not available, configure another provider before reviewing code.
 
 OCR manages LLM configuration through a unified **Provider** system. It ships with many popular built-in providers and also supports adding custom providers to connect to private deployments or other compatible endpoints. Config is stored in `~/.opencodereview/config.json`.
 
@@ -187,6 +186,9 @@ Use `ocr config set` to write provider configuration directly, suitable for scri
 Using a built-in provider:
 
 ```bash
+ocr config set provider codex
+ocr config set providers.codex.model gpt-5.5
+
 ocr config set provider anthropic
 ocr config set providers.anthropic.api_key your-api-key-here
 ocr config set providers.anthropic.model claude-sonnet-4-6
@@ -203,6 +205,14 @@ ocr config set custom_providers.my-gateway.model gpt-4o
 ```
 
 > `url` and `protocol` are required for custom providers. Supported protocols: `anthropic`, `openai`.
+
+Local Codex defaults can be overridden without changing config files:
+
+```bash
+export OCR_CODEX_URL=http://127.0.0.1:15721/v1
+export OCR_CODEX_MODEL=gpt-5.5
+export OCR_CODEX_REASONING_EFFORT=high
+```
 
 Optional settings:
 
@@ -277,7 +287,7 @@ OCR can be seamlessly integrated into AI coding agents as a slash command, enabl
 Use `npx` to install the OCR skill into your project:
 
 ```bash
-npx skills add alibaba/open-code-review --skill open-code-review
+npx skills add Daishuyuan/my-open-code-review --skill open-code-review
 ```
 
 This installs the `open-code-review` skill from the [skills registry](skills/open-code-review/SKILL.md), which teaches your coding agent how to invoke `ocr` for code review, classify issues by priority, and optionally apply fixes.
@@ -287,7 +297,7 @@ This installs the `open-code-review` skill from the [skills registry](skills/ope
 For [Claude Code](https://docs.anthropic.com/en/docs/claude-code), install the command plugin through the following command in Claude Code:
 
 ```bash
-/plugin marketplace add alibaba/open-code-review
+/plugin marketplace add Daishuyuan/my-open-code-review
 /plugin install open-code-review@open-code-review
 ```
 
@@ -298,7 +308,7 @@ This registers the `/open-code-review:review` slash command, which runs OCR and 
 For local Codex, install the Open Code Review plugin from this repository:
 
 ```bash
-codex plugin marketplace add alibaba/open-code-review
+codex plugin marketplace add Daishuyuan/my-open-code-review
 codex
 /plugins
 ```
@@ -322,10 +332,10 @@ Install and enable `Open Code Review`, then start a new Codex thread and invoke 
 This registers a Codex skill that runs the local OCR CLI:
 
 ```bash
-ocr review --audience agent
+ocr review --audience agent --review-profile codex-super
 ```
 
-This integration does not change OCR's internal LLM backend and does not require configuring an OpenAI Responses API endpoint for Codex. OCR itself still requires the `ocr` CLI to be installed and configured as described in the CLI setup section.
+This fork defaults OCR's internal LLM backend to local Codex when no explicit OCR config exists. Override it with `OCR_CODEX_URL`, `OCR_CODEX_MODEL`, `OCR_CODEX_REASONING_EFFORT`, or the regular `ocr config provider` flow.
 
 Korean guide: [`plugins/open-code-review/CODEX.ko-KR.md`](plugins/open-code-review/CODEX.ko-KR.md)
 
@@ -334,7 +344,7 @@ Korean guide: [`plugins/open-code-review/CODEX.ko-KR.md`](plugins/open-code-revi
 For [Cursor](https://www.cursor.com/), install the Open Code Review plugin from this repository:
 
 ```
-cursor-plugin marketplace add alibaba/open-code-review
+cursor-plugin marketplace add Daishuyuan/my-open-code-review
 ```
 
 Or add the marketplace manually. In Cursor, open `/plugins`, search for `Open Code Review`, and install it.
@@ -359,7 +369,7 @@ This registers a Cursor skill that runs the local OCR CLI:
 ocr review --audience agent
 ```
 
-This integration does not change OCR's internal LLM backend. OCR itself still requires the `ocr` CLI to be installed and configured as described in the CLI setup section.
+This fork defaults OCR's internal LLM backend to local Codex when no explicit OCR config exists. Override it with `OCR_CODEX_URL`, `OCR_CODEX_MODEL`, `OCR_CODEX_REASONING_EFFORT`, or the regular provider setup flow.
 
 #### Option 5: Copy the Command File Directly
 
@@ -370,7 +380,7 @@ For a quick setup without any package manager, simply copy the command file to u
 ```bash
 mkdir -p .claude/commands
 curl -o .claude/commands/open-code-review.md \
-  https://raw.githubusercontent.com/alibaba/open-code-review/main/plugins/open-code-review/commands/review.md
+  https://raw.githubusercontent.com/Daishuyuan/my-open-code-review/main/plugins/open-code-review/commands/review.md
 ```
 
 **User-level** (personal global use across all projects):
@@ -378,10 +388,10 @@ curl -o .claude/commands/open-code-review.md \
 ```bash
 mkdir -p ~/.claude/commands
 curl -o ~/.claude/commands/open-code-review.md \
-  https://raw.githubusercontent.com/alibaba/open-code-review/main/plugins/open-code-review/commands/review.md
+  https://raw.githubusercontent.com/Daishuyuan/my-open-code-review/main/plugins/open-code-review/commands/review.md
 ```
 
-> **Prerequisite**: All integration methods require the `ocr` CLI to be installed and an LLM configured. See [Install](#install) and [Configure LLM](#1-configure-llm) above.
+> **Prerequisite**: All integration methods require the `ocr` CLI to be installed. LLM config is optional when a local Codex-compatible endpoint is available; otherwise configure a provider as described above.
 
 ### CI/CD Integration
 
@@ -438,6 +448,7 @@ See the [`examples/`](./examples/) directory for integration examples:
 | `--background` | `-b` | — | Optional requirement/business context for the review; auto-filled from commit message when using `--commit` |
 | `--model` | — | — | Select or override the LLM model for this review |
 | `--rule` | — | — | Path to custom JSON review rules |
+| `--review-profile` | `--profile` | — | Built-in review profile layered on top of resolved rules; available: `codex-super` |
 | `--max-tools` | — | built-in | Max tool call rounds per file; only takes effect when greater than template default |
 | `--max-git-procs` | — | built-in | Max concurrent git subprocesses |
 | `--tools` | — | — | Path to custom JSON tools config |
@@ -461,6 +472,7 @@ non-git directories too (it falls back to a filesystem walk that honors `.gitign
 | `--format` | `-f` | `text` | Output format: `text` or `json` (JSON includes a `project_summary` field) |
 | `--concurrency` | — | `8` | Max concurrent file scans |
 | `--rule` | — | — | Path to custom JSON review rules |
+| `--review-profile` | `--profile` | — | Built-in review profile layered on top of resolved rules; available: `codex-super` |
 | `--repo` | — | current dir | Repository or directory root to scan |
 
 Before each run, `ocr scan` prints a rough token-cost estimate. Use `--preview` to see the
@@ -537,6 +549,12 @@ This blocks DNS-rebinding attacks against the local viewer.
 ## Review Rules
 
 OCR resolves review rules using a four-layer priority chain. Each layer uses first-match-wins: if a file path matches a pattern, that rule is used; otherwise it falls through to the next layer.
+
+Optional review profiles are layered on top of the resolved rule without changing
+this priority chain. Use `--review-profile codex-super` to enable the Codex
+findings-first review contract, severity rubric, changed-line relevance rules,
+and bug/security/contracts/tests/quality/history risk lenses. Codex plugin
+invocations use this profile by default; plain CLI invocations do not.
 
 | Priority | Source | Path | Description |
 |----------|--------|------|-------------|

@@ -6,7 +6,7 @@ const fs = require("fs");
 const IS_WINDOWS = process.platform === "win32";
 const BINARY_FILENAME = IS_WINDOWS ? "opencodereview.exe" : "opencodereview";
 
-const PLATFORM_PKG = {
+const LEGACY_PLATFORM_PKG = {
   "darwin-arm64": "@alibaba-group/ocr-darwin-arm64",
   "darwin-x64": "@alibaba-group/ocr-darwin-x64",
   "linux-arm64": "@alibaba-group/ocr-linux-arm64",
@@ -15,22 +15,43 @@ const PLATFORM_PKG = {
   "win32-x64": "@alibaba-group/ocr-win32-x64",
 };
 
-function getPlatformPackageName() {
-  const key = `${process.platform}-${process.arch}`;
-
+function loadParentPackage() {
   try {
-    const parentPkg = JSON.parse(
+    return JSON.parse(
       fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")
     );
-    const optDeps = parentPkg.optionalDependencies || {};
-    for (const name of Object.keys(optDeps)) {
-      if (name.endsWith(`-${key}`)) {
-        return name;
-      }
-    }
-  } catch (_) {}
+  } catch (_) {
+    return {};
+  }
+}
 
-  return PLATFORM_PKG[key] || null;
+function platformPackageFromConfig(pkg, key) {
+  const config = pkg.ocrConfig || {};
+  if (config.platformPackages && config.platformPackages[key]) {
+    return config.platformPackages[key];
+  }
+  const prefix = process.env.OCR_PLATFORM_PACKAGE_PREFIX || config.platformPackagePrefix;
+  if (prefix) {
+    return `${prefix}-${key}`;
+  }
+  return null;
+}
+
+function getPlatformPackageName() {
+  const key = `${process.platform}-${process.arch}`;
+  if (process.env.OCR_PLATFORM_PACKAGE) {
+    return process.env.OCR_PLATFORM_PACKAGE;
+  }
+
+  const parentPkg = loadParentPackage();
+  const optDeps = parentPkg.optionalDependencies || {};
+  for (const name of Object.keys(optDeps)) {
+    if (name.endsWith(`-${key}`)) {
+      return name;
+    }
+  }
+
+  return platformPackageFromConfig(parentPkg, key) || LEGACY_PLATFORM_PKG[key] || null;
 }
 
 function resolveNativeBinary() {
@@ -60,7 +81,9 @@ function resolveNativeBinary() {
 module.exports = {
   IS_WINDOWS,
   BINARY_FILENAME,
-  PLATFORM_PKG,
+  PLATFORM_PKG: LEGACY_PLATFORM_PKG,
+  LEGACY_PLATFORM_PKG,
+  platformPackageFromConfig,
   getPlatformPackageName,
   resolveNativeBinary,
 };

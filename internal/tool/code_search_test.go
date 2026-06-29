@@ -33,15 +33,20 @@ func TestBuildGrepArgs_CommitMode(t *testing.T) {
 	p := NewCodeSearch(&FileReader{RepoDir: "/tmp", Ref: "abc1234"})
 	args := p.buildGrepArgs("myFunc", false, false, false, []string{"pkg/"})
 
-	assertContainsInOrder(t, args, "-e", "myFunc", "--end-of-options", "abc1234", "--", "pkg/")
+	assertContainsInOrder(t, args, "-e", "myFunc", "abc1234", "--", "pkg/")
 	assertNotContains(t, args, "--untracked")
 }
 
-func TestBuildGrepArgs_RefUsesEndOfOptions(t *testing.T) {
+func TestGitGrep_RejectsOptionLikeRef(t *testing.T) {
 	p := NewCodeSearch(&FileReader{RepoDir: "/tmp", Ref: "-O./pwn.sh"})
-	args := p.buildGrepArgs("myFunc", false, false, false, nil)
+	result, err := p.gitGrep(context.Background(), "myFunc", false, false, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	assertContainsInOrder(t, args, "-e", "myFunc", "--end-of-options", "-O./pwn.sh", "--")
+	if !strings.HasPrefix(result, "Error: invalid git ref") {
+		t.Fatalf("expected invalid ref error, got %s", result)
+	}
 }
 
 func TestBuildGrepArgs_PatternStartingWithDash(t *testing.T) {

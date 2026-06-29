@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "description": "AI-powered code review on Git diffs — supports workspace changes, branch ranges, and single commits with concurrent per-file analysis, codebase search, and deep context-aware review.",
   "author": {
-    "name": "Alibaba"
+    "name": "Daishuyuan"
   },
-  "homepage": "https://github.com/alibaba/open-code-review",
-  "repository": "https://github.com/alibaba/open-code-review",
+  "homepage": "https://github.com/Daishuyuan/my-open-code-review",
+  "repository": "https://github.com/Daishuyuan/my-open-code-review",
   "license": "Apache-2.0",
   "keywords": [
     "code-review",

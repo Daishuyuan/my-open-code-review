@@ -6,7 +6,7 @@ import (
 )
 
 func TestLookupProvider_KnownProviders(t *testing.T) {
-	names := []string{"anthropic", "openai", "dashscope"}
+	names := []string{"anthropic", "codex", "openai", "dashscope"}
 	for _, name := range names {
 		p, ok := LookupProvider(name)
 		if !ok {
@@ -40,7 +40,7 @@ func TestListProviders_Order(t *testing.T) {
 	if len(providers) < 3 {
 		t.Fatalf("expected at least 3 providers, got %d", len(providers))
 	}
-	expected := []string{"anthropic", "baidu-qianfan", "dashscope", "dashscope-tokenplan", "deepseek", "hy-tokenplan", "kimi", "mimo", "minimax", "openai", "tencent-tokenhub", "volcengine", "z-ai"}
+	expected := []string{"anthropic", "baidu-qianfan", "codex", "dashscope", "dashscope-tokenplan", "deepseek", "hy-tokenplan", "kimi", "mimo", "minimax", "openai", "tencent-tokenhub", "volcengine", "z-ai"}
 	if len(providers) != len(expected) {
 		t.Fatalf("expected %d providers, got %d", len(expected), len(providers))
 	}
@@ -124,5 +124,37 @@ func TestLookupProvider_OpenAIDetails(t *testing.T) {
 	}
 	if p.AuthHeader != "" {
 		t.Errorf("AuthHeader = %q, want empty", p.AuthHeader)
+	}
+}
+
+func TestLookupProvider_CodexDetails(t *testing.T) {
+	p, ok := LookupProvider("codex")
+	if !ok {
+		t.Fatal("codex not found")
+	}
+	if p.Protocol != "openai" {
+		t.Errorf("Protocol = %q, want %q", p.Protocol, "openai")
+	}
+	if p.BaseURL != DefaultCodexBaseURL {
+		t.Errorf("BaseURL = %q, want %q", p.BaseURL, DefaultCodexBaseURL)
+	}
+	if p.DefaultToken == "" {
+		t.Error("DefaultToken should be set for local Codex")
+	}
+	if len(p.Models) != 1 || p.Models[0] != DefaultCodexModel {
+		t.Errorf("Models = %v, want [%s]", p.Models, DefaultCodexModel)
+	}
+	if p.ExtraBody["reasoning_effort"] != DefaultCodexReasoningEffort {
+		t.Errorf("reasoning_effort = %v, want %q", p.ExtraBody["reasoning_effort"], DefaultCodexReasoningEffort)
+	}
+}
+
+func TestLookupProvider_ReturnsCopyOfExtraBody(t *testing.T) {
+	p1, _ := LookupProvider("codex")
+	p1.ExtraBody["reasoning_effort"] = "mutated"
+
+	p2, _ := LookupProvider("codex")
+	if p2.ExtraBody["reasoning_effort"] == "mutated" {
+		t.Error("LookupProvider returns a reference to ExtraBody, should return a copy")
 	}
 }

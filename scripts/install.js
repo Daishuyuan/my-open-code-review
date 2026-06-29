@@ -62,8 +62,8 @@ function loadPackageJson() {
   if (!pkg.version) {
     throw new Error("Missing version field in package.json");
   }
-  if (!pkg.ocrConfig || !pkg.ocrConfig.urlPattern) {
-    throw new Error("Missing ocrConfig.urlPattern in package.json");
+  if (!pkg.ocrConfig) {
+    throw new Error("Missing ocrConfig in package.json");
   }
   return pkg;
 }
@@ -83,8 +83,35 @@ function resolveVersion(pkg) {
 function buildUrl(pattern, vars) {
   return pattern
     .replace(/\{version\}/g, vars.version)
+    .replace(/\{releaseRepo\}/g, vars.releaseRepo)
+    .replace(/\{asset\}/g, vars.asset)
     .replace(/\{os\}/g, vars.os)
     .replace(/\{arch\}/g, vars.arch);
+}
+
+function resolveDownloadConfig(pkg, vars) {
+  const config = pkg.ocrConfig || {};
+  const releaseRepo = process.env.OCR_RELEASE_REPO || config.releaseRepo || "alibaba/open-code-review";
+  const assetPattern = process.env.OCR_ASSET_PATTERN || config.assetPattern || "opencodereview-{os}-{arch}";
+  const asset = buildUrl(assetPattern, { ...vars, releaseRepo, asset: "" });
+  const expandedVars = { ...vars, releaseRepo, asset };
+
+  const urlPattern =
+    process.env.OCR_BINARY_URL_PATTERN ||
+    config.urlPattern ||
+    "https://github.com/{releaseRepo}/releases/download/v{version}/{asset}";
+  const checksumPattern =
+    process.env.OCR_CHECKSUM_URL_PATTERN ||
+    config.checksumPattern ||
+    "";
+
+  return {
+    releaseRepo,
+    asset,
+    urlPattern,
+    checksumPattern,
+    vars: expandedVars,
+  };
 }
 
 function download(url, maxRedirects = 10) {
@@ -165,7 +192,6 @@ async function main() {
 
   const pkg = loadPackageJson();
   const version = resolveVersion(pkg);
-  const config = pkg.ocrConfig;
 
   if (!fs.existsSync(binDir)) {
     fs.mkdirSync(binDir, { recursive: true });
@@ -183,7 +209,8 @@ async function main() {
   }
 
   const vars = { version, os, arch };
-  let downloadUrl = buildUrl(config.urlPattern, vars);
+  const downloadConfig = resolveDownloadConfig(pkg, vars);
+  let downloadUrl = buildUrl(downloadConfig.urlPattern, downloadConfig.vars);
   if (IS_WINDOWS) {
     downloadUrl += ".exe";
   }
@@ -194,8 +221,8 @@ async function main() {
     fs.chmodSync(binaryDest, 0o755);
   }
 
-  if (config.checksumPattern) {
-    const checksumUrl = buildUrl(config.checksumPattern, vars);
+  if (downloadConfig.checksumPattern && process.env.OCR_SKIP_CHECKSUM !== "1") {
+    const checksumUrl = buildUrl(downloadConfig.checksumPattern, downloadConfig.vars);
     info("Verifying checksum...");
     let shaContent;
     try {
@@ -259,6 +286,7 @@ if (require.main === module) {
     BINARY_NAME,
     detectPlatform,
     loadPackageJson,
+    resolveDownloadConfig,
     buildUrl,
     download,
     downloadText,

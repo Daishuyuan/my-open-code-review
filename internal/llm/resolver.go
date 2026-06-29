@@ -29,6 +29,10 @@ const (
 	envOCRLLMAuthHeader   = "OCR_LLM_AUTH_HEADER"
 	envOCRLLMExtraHeaders = "OCR_LLM_EXTRA_HEADERS"
 	envOCRUseAnthropic    = "OCR_USE_ANTHROPIC"
+	envOCRCodexURL        = "OCR_CODEX_URL"
+	envOCRCodexToken      = "OCR_CODEX_TOKEN"
+	envOCRCodexModel      = "OCR_CODEX_MODEL"
+	envOCRCodexReasoning  = "OCR_CODEX_REASONING_EFFORT"
 )
 
 // Environment variable names from Claude Code configuration.
@@ -59,6 +63,7 @@ func ResolveEndpointWithModelOverride(configPath, modelOverride string) (Resolve
 		{"OCR environment", func() (ResolvedEndpoint, bool, error) { return tryOCREnv(modelOverride) }},
 		{"Claude Code environment", func() (ResolvedEndpoint, bool, error) { return tryCCEnv(modelOverride) }},
 		{"Shell rc file", func() (ResolvedEndpoint, bool, error) { return tryShellRC(modelOverride) }},
+		{"Local Codex default", func() (ResolvedEndpoint, bool, error) { return tryDefaultCodexLocal(modelOverride) }},
 	}
 
 	for _, s := range strategies {
@@ -203,6 +208,9 @@ func tryProviderConfig(cfg configFile, modelOverride string) (ResolvedEndpoint, 
 			apiKey = os.Getenv(preset.EnvVar)
 		}
 	}
+	if apiKey == "" && isPreset && preset.DefaultToken != "" {
+		apiKey = preset.DefaultToken
+	}
 	if apiKey == "" {
 		return ResolvedEndpoint{}, false, fmt.Errorf("provider %q has no api_key configured and no environment variable fallback found", cfg.Provider)
 	}
@@ -214,6 +222,7 @@ func tryProviderConfig(cfg configFile, modelOverride string) (ResolvedEndpoint, 
 		url = preset.BaseURL
 		protocol = preset.Protocol
 		authHeader = preset.AuthHeader
+		extraBody = copyExtraBody(preset.ExtraBody)
 		if entry.URL != "" {
 			url = entry.URL
 		}
@@ -237,6 +246,9 @@ func tryProviderConfig(cfg configFile, modelOverride string) (ResolvedEndpoint, 
 	}
 	if entry.Model != "" {
 		model = entry.Model
+	}
+	if model == "" && isPreset && preset.DefaultModel != "" {
+		model = preset.DefaultModel
 	}
 
 	// Build available model list for validation.
@@ -285,7 +297,7 @@ func tryProviderConfig(cfg configFile, modelOverride string) (ResolvedEndpoint, 
 		authHeader = ""
 	}
 
-	extraBody = entry.ExtraBody
+	extraBody = mergeExtraBody(extraBody, entry.ExtraBody)
 	extraHeaders := entry.ExtraHeaders
 
 	if protocol == "anthropic" {
@@ -302,6 +314,77 @@ func tryProviderConfig(cfg configFile, modelOverride string) (ResolvedEndpoint, 
 		ExtraBody:    extraBody,
 		ExtraHeaders: extraHeaders,
 	}, true, nil
+}
+
+func tryDefaultCodexLocal(modelOverride string) (ResolvedEndpoint, bool, error) {
+	preset, ok := LookupProvider("codex")
+	if !ok {
+		return ResolvedEndpoint{}, false, nil
+	}
+
+	url := strings.TrimSpace(os.Getenv(envOCRCodexURL))
+	if url == "" {
+		url = preset.BaseURL
+	}
+
+	token := strings.TrimSpace(os.Getenv(envOCRCodexToken))
+	if token == "" && preset.EnvVar != "" {
+		token = strings.TrimSpace(os.Getenv(preset.EnvVar))
+	}
+	if token == "" {
+		token = preset.DefaultToken
+	}
+
+	model := strings.TrimSpace(os.Getenv(envOCRCodexModel))
+	if model == "" {
+		model = DefaultCodexModel
+	}
+	if modelOverride != "" {
+		model = modelOverride
+	}
+
+	extraBody := copyExtraBody(preset.ExtraBody)
+	reasoning := strings.TrimSpace(os.Getenv(envOCRCodexReasoning))
+	if reasoning == "" {
+		reasoning = DefaultCodexReasoningEffort
+	}
+	if reasoning != "" {
+		extraBody["reasoning_effort"] = reasoning
+	}
+
+	return ResolvedEndpoint{
+		URL:       url,
+		Token:     token,
+		Model:     model,
+		Protocol:  preset.Protocol,
+		Source:    "local Codex default",
+		ExtraBody: extraBody,
+	}, true, nil
+}
+
+func copyExtraBody(src map[string]any) map[string]any {
+	if src == nil {
+		return nil
+	}
+	dst := make(map[string]any, len(src))
+	for k, v := range src {
+		dst[k] = v
+	}
+	return dst
+}
+
+func mergeExtraBody(base map[string]any, override map[string]any) map[string]any {
+	if len(override) == 0 {
+		return base
+	}
+	merged := copyExtraBody(base)
+	if merged == nil {
+		merged = make(map[string]any, len(override))
+	}
+	for k, v := range override {
+		merged[k] = v
+	}
+	return merged
 }
 
 // tryLegacyLlmConfig resolves an endpoint from the legacy llm config block.

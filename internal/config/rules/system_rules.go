@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -113,6 +114,7 @@ type RuleDetail struct {
 	Rule    string // rule text
 	Source  string // "custom" | "project" | "global" | "system"
 	Pattern string // glob pattern that matched, or "default" for fallback
+	Profile string // optional built-in review profile merged with the rule
 }
 
 // DetailResolver extends Resolver with source metadata.
@@ -242,6 +244,52 @@ type composedResolver struct {
 	system  *SystemRule  // lowest: embedded default
 }
 
+// Profile is an optional built-in review contract layered on top of the
+// resolved rule. Profiles do not participate in path matching or file filters;
+// they are mandatory guidance appended to whatever rule the normal priority
+// chain resolved.
+type Profile struct {
+	Name string
+	Rule string
+}
+
+var builtInProfiles = map[string]string{
+	"codex-super": "codex_super.md",
+}
+
+// AvailableProfiles returns the stable list of built-in review profile names.
+func AvailableProfiles() []string {
+	names := make([]string, 0, len(builtInProfiles))
+	for name := range builtInProfiles {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
+}
+
+// LoadProfile loads a built-in review profile by name. An empty name means no
+// profile and returns the zero Profile.
+func LoadProfile(name string) (Profile, error) {
+	name = strings.ToLower(strings.TrimSpace(name))
+	if name == "" {
+		return Profile{}, nil
+	}
+	file, ok := builtInProfiles[name]
+	if !ok {
+		return Profile{}, fmt.Errorf("unknown review profile %q (available: %s)", name, strings.Join(AvailableProfiles(), ", "))
+	}
+	content, err := rulesFS.ReadFile("rule_docs/" + file)
+	if err != nil {
+		return Profile{}, fmt.Errorf("read review profile %q: %w", name, err)
+	}
+	return Profile{Name: name, Rule: strings.TrimRight(string(content), "\n")}, nil
+}
+
+type profileResolver struct {
+	base    Resolver
+	profile Profile
+}
+
 // NewResolver builds a Resolver with the following priority:
 //  1. Custom rule file specified via --rule flag (first match wins)
 //  2. Project-local .opencodereview/rule.json (first match wins)
@@ -286,6 +334,63 @@ func NewResolver(repoDir, customRulePath string) (Resolver, *FileFilter, error) 
 		global:  globalRule,
 		system:  sysRule,
 	}, filter, nil
+}
+
+// NewResolverWithProfile builds the normal resolver and layers a built-in
+// profile on top of every resolved rule. The profile is deliberately outside
+// the --rule/project/global/system priority chain so it cannot hide
+// project-specific rules or change include/exclude filtering.
+func NewResolverWithProfile(repoDir, customRulePath, profileName string) (Resolver, *FileFilter, error) {
+	resolver, filter, err := NewResolver(repoDir, customRulePath)
+	if err != nil {
+		return nil, nil, err
+	}
+	profile, err := LoadProfile(profileName)
+	if err != nil {
+		return nil, nil, err
+	}
+	if profile.Name == "" {
+		return resolver, filter, nil
+	}
+	return &profileResolver{base: resolver, profile: profile}, filter, nil
+}
+
+func (p *profileResolver) Resolve(path string) string {
+	if p == nil || p.base == nil {
+		return ""
+	}
+	return mergeProfileRule(p.profile, p.base.Resolve(path))
+}
+
+func (p *profileResolver) ResolveDetail(path string) RuleDetail {
+	if p == nil || p.base == nil {
+		return RuleDetail{}
+	}
+	if dr, ok := p.base.(DetailResolver); ok {
+		detail := dr.ResolveDetail(path)
+		detail.Rule = mergeProfileRule(p.profile, detail.Rule)
+		detail.Profile = p.profile.Name
+		return detail
+	}
+	return RuleDetail{
+		Rule:    mergeProfileRule(p.profile, p.base.Resolve(path)),
+		Source:  "profile",
+		Pattern: "all",
+		Profile: p.profile.Name,
+	}
+}
+
+func mergeProfileRule(profile Profile, rule string) string {
+	if profile.Name == "" || strings.TrimSpace(profile.Rule) == "" {
+		return rule
+	}
+
+	profileBlock := "## Review Profile: " + profile.Name + " (Mandatory)\n\n" + profile.Rule
+	if strings.TrimSpace(rule) == "" {
+		return profileBlock
+	}
+
+	return profileBlock + "\n\n---\n\n" + rule
 }
 
 // buildFileFilter picks the highest-priority layer that has any include/exclude
